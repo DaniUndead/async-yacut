@@ -2,7 +2,6 @@ import os
 import asyncio
 import aiohttp
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 from flask import (
     render_template, redirect, url_for, flash, abort, current_app
 )
@@ -20,8 +19,7 @@ DISK_TOKEN = os.environ.get('DISK_TOKEN')
 async def upload_file_to_yandex(session, file_obj, token):
     headers = {'Authorization': f'OAuth {DISK_TOKEN}'}
     base_url = 'https://cloud-api.yandex.net/v1/disk/resources'
-
-    filename = secure_filename(file_obj.filename)
+    filename = file_obj.filename
     disk_path = f'/{filename}'
 
     async with session.get(
@@ -37,6 +35,17 @@ async def upload_file_to_yandex(session, file_obj, token):
     file_data = file_obj.read()
     async with session.put(upload_url, data=file_data) as resp:
         resp.raise_for_status()
+
+    async with session.get(
+        f'{base_url}/download',
+        params={'path': disk_path},
+        headers=headers
+    ) as resp:
+        if resp.status != 200:
+            data = await resp.json()
+            raise Exception(f"Yandex Download Error: {data.get('message')}")
+
+        await resp.json()
 
     return filename
 
@@ -136,7 +145,6 @@ def upload_view():
                 db.session.add(new_link)
 
             db.session.commit()
-            return redirect(url_for('upload_view'))
 
         except Exception as e:
             flash(f'Ошибка: {e}', 'error')
