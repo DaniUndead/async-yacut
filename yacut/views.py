@@ -1,9 +1,10 @@
 import os
+import io
 import asyncio
 import aiohttp
 from dotenv import load_dotenv
 from flask import (
-    render_template, redirect, url_for, flash, abort, current_app
+    render_template, redirect, url_for, flash, abort, current_app, send_file
 )
 
 from . import app, db
@@ -108,8 +109,16 @@ async def redirect_view(short_id):
         fresh_url = await get_fresh_download_link(filename)
 
         if fresh_url:
-            return redirect(fresh_url)
-        abort(404)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(fresh_url) as resp:
+                    if resp.status == 200:
+                        file_bytes = await resp.read()
+                        return send_file(
+                            io.BytesIO(file_bytes),
+                            download_name=filename,
+                            as_attachment=True
+                        )
+            abort(404)
 
     return redirect(link.original)
 
