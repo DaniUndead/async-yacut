@@ -1,24 +1,60 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Загрузка файлов на Яндекс Диск</h2>
+  <main>
+    <section class="container my-5 px-4">
+      <h1 class="text-center">Загрузка файлов на <span style="color:red">Ya</span>Disk</h1>
+      <p class="text-center my-4">
+        Выберите один или несколько файлов, чтобы получить для них короткие ссылки
+      </p>
 
-{% if saved_links %}
-    <h3>Успешно загружено:</h3>
-    <ul>
-        {% for filename, short_url in saved_links %}
-            <li>{{ filename }}: <a href="{{ short_url }}">{{ short_url }}</a></li>
-        {% endfor %}
-    </ul>
-{% endif %}
+      <div class="container">
+        <div class="row my-3">
+          <div class="col-sm"></div>
+          <div class="col-sm">
+            <form method="POST" enctype="multipart/form-data" novalidate>
+              {{ form.csrf_token }}
+              <div class="mb-3">
+                <label class="form-label">{{ form.files.label }}</label>
+                {{ form.files(class="form-control form-control-lg") }}
+                
+                <p>
+                  <span style="color:red">
+                    {% if form.files.errors %}
+                      {% for error in form.files.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    {% endif %}
+                  </span>
+                </p>
+              </div>
+              
+              {{ form.submit(class="btn btn-primary") }}
+            </form>
+          </div>
+          <div class="col-sm"></div>
+        </div>
+      </div>
 
-<form method="POST" action="" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.files.label }}<br>
-        {{ form.files() }}
-        {% for error in form.files.errors %}<span style="color:red;">[{{ error }}]</span>{% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+      {% if saved_links %}
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-sm"></div>
+          <div class="col-sm-8">
+            <h5 class="text-center mb-4">Файлы успешно загружены:</h5>
+            <ul class="list-group">
+              {% for filename, short_url in saved_links %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <strong>{{ filename }}</strong>
+                  <a href="{{ short_url }}" target="_blank">{{ short_url }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="col-sm"></div>
+        </div>
+      </div>
+      {% endif %}
+
+    </section>
+  </main>
 {% endblock %}

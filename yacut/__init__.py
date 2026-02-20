@@ -1,5 +1,8 @@
 import os
 
+import mimetypes
+mimetypes.add_type('text/css', '.css')
+
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     'sqlite:///db.sqlite3'
 )
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
+app.config['DISK_TOKEN'] = os.getenv('DISK_TOKEN')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

@@ -1,27 +1,41 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>URL Shortener & Uploader</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <nav>
-        <a href="{{ url_for('index_view') }}">Главная</a> | 
-        <a href="{{ url_for('upload_view') }}">Загрузка файлов</a>
-    </nav>
-    <hr>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 
-    {% block content %}{% endblock %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>YaCut - укоротитель ссылок</title>
+</head>
+
+<body>
+  <header class="pb-5">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+      <div class="container">
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index_view' %}active{% endif %}" 
+                 href="{{ url_for('index_view') }}">Главная</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'upload_view' %}active{% endif %}" 
+                 href="{{ url_for('upload_view') }}">Загрузка файлов</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="fixed-bottom border-top text-center py-3 bg-white">
+    <p>Укоротитель ссылок YaCut</p>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>
