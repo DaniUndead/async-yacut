@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Сократить ссылку</h2>
+
+{% if short_url %}
+    <p>
+        Ваша новая ссылка: 
+        <a href="{{ short_url }}">{{ short_url }}</a>
+    </p>
+{% endif %}
+
+<form method="POST" action="">
+    {{ form.hidden_tag() }} 
+    <p>
+        {{ form.original_link.label }}<br>
+        {{ form.original_link(size=50) }}
+        {% for error in form.original_link.errors %}<span style="color:red;">[{{ error }}]</span>{% endfor %}
+    </p>
+    <p>
+        {{ form.custom_id.label }}<br>
+        {{ form.custom_id(size=20) }}
+        {% for error in form.custom_id.errors %}<span style="color:red;">[{{ error }}]</span>{% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}

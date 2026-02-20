@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Загрузка файлов на Яндекс Диск</h2>
+
+{% if saved_links %}
+    <h3>Успешно загружено:</h3>
+    <ul>
+        {% for filename, short_url in saved_links %}
+            <li>{{ filename }}: <a href="{{ short_url }}">{{ short_url }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="POST" action="" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.files.label }}<br>
+        {{ form.files() }}
+        {% for error in form.files.errors %}<span style="color:red;">[{{ error }}]</span>{% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
