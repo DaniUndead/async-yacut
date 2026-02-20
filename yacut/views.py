@@ -1,17 +1,16 @@
-import os
-import io
 import asyncio
+import io
+import os
+
 import aiohttp
 from dotenv import load_dotenv
-from flask import (
-    render_template, redirect, url_for, flash, abort, current_app, send_file
-)
+from flask import (abort, current_app, flash, redirect, render_template,
+                   send_file, url_for)
 
 from . import app, db
+from .forms import UploadForm, URLForm
 from .models import URLMap
-from .forms import URLForm, UploadForm
 from .utils import get_unique_short_id
-
 
 load_dotenv()
 DISK_TOKEN = os.environ.get('DISK_TOKEN')

@@ -1,6 +1,8 @@
 import random
 import string
+
 from .models import URLMap
+
 
 def get_unique_short_id(length=6):
     """Генерирует случайную строку из 6 символов и проверяет уникальность."""
