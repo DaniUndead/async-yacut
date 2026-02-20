@@ -16,6 +16,7 @@ def get_url(short_id):
 
     return jsonify({'url': link.original}), 200
 
+
 @app.route('/api/id/', methods=['POST'])
 def create_url():
     """API: Создание новой короткой ссылки"""
