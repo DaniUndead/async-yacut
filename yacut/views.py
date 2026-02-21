@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template
 
 from . import app
 from .forms import UploadForm, URLForm
@@ -15,7 +15,6 @@ def index_view():
         return render_template('index.html', form=form)
 
     custom_id = form.custom_id.data
-
 
     if custom_id and (custom_id == 'files' or URLMap.get_by_short(custom_id)):
         flash(EXISTING_ID_MSG, 'error')
@@ -50,10 +49,13 @@ def upload_view():
 
     if form.validate_on_submit():
         try:
-            # Загружаем файлы и сразу создаем для них короткие ссылки
+
             results = upload_files_to_yandex(form.files.data)
             saved_links = [
-                (filename, URLMap.create_short_link(original=url).get_short_link())
+                (
+                    filename,
+                    URLMap.create_short_link(original=url).get_short_link()
+                )
                 for filename, url in results
             ]
         except Exception as e:
