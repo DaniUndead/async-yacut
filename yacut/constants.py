@@ -11,4 +11,6 @@ DISK_TOKEN = os.environ.get('DISK_TOKEN')
 YANDEX_API_BASE_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 YANDEX_HEADERS = {'Authorization': f'OAuth {DISK_TOKEN}'}
 
-REDIRECT_ENDPOINT = 'redirect_view'
+REDIRECT_VIEW_NAME = 'redirect_view'
+
+EXISTING_ID_MSG = 'Предложенный вариант короткой ссылки уже существует.'
