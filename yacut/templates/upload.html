@@ -19,11 +19,9 @@
                 
                 <p>
                   <span style="color:red">
-                    {% if form.files.errors %}
-                      {% for error in form.files.errors %}
-                        {{ error }}
-                      {% endfor %}
-                    {% endif %}
+                    {% for error in form.files.errors %}
+                      {{ error }}
+                    {% endfor %}
                   </span>
                 </p>
               </div>

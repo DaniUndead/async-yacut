@@ -1,24 +1,25 @@
+import os
 import asyncio
 import aiohttp
-from flask import current_app
 
 
-from .constants import YANDEX_API_BASE_URL
+YANDEX_API_BASE_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
+
+YANDEX_UPLOAD_URL = f'{YANDEX_API_BASE_URL}/upload'
+YANDEX_DOWNLOAD_URL = f'{YANDEX_API_BASE_URL}/download'
+YANDEX_TOKEN = os.getenv('DISK_TOKEN', 'твой_токен_по_умолчанию_если_нужно')
+YANDEX_HEADERS = {'Authorization': f'OAuth {YANDEX_TOKEN}'}
 
 
 class YandexUploadError(RuntimeError):
     pass
 
 
-async def _upload_single_file(session, file_obj, token):
-    headers = {'Authorization': f'OAuth {token}'}
-    filename = file_obj.filename
-    disk_path = f'/{filename}'
-
+async def _upload_single_file(session, file_obj):
     async with session.get(
-        f'{YANDEX_API_BASE_URL}/upload',
-        params={'path': disk_path, 'overwrite': 'true'},
-        headers=headers
+        YANDEX_UPLOAD_URL,
+        params={'path': f'/{file_obj.filename}', 'overwrite': 'true'},
+        headers=YANDEX_HEADERS
     ) as resp:
         resp.raise_for_status()
         upload_url = (await resp.json())['href']
@@ -28,21 +29,19 @@ async def _upload_single_file(session, file_obj, token):
         resp.raise_for_status()
 
     async with session.get(
-        f'{YANDEX_API_BASE_URL}/download',
-        params={'path': disk_path},
-        headers=headers
+        YANDEX_DOWNLOAD_URL,
+        params={'path': f'/{file_obj.filename}'},
+        headers=YANDEX_HEADERS
     ) as resp:
         resp.raise_for_status()
-        data = await resp.json()
-        return filename, data.get('href')
+        return file_obj.filename, (await resp.json()).get('href')
 
 
 def upload_files_to_yandex(files):
-    token = current_app.config.get('DISK_TOKEN')
-
     async def _upload_all():
         async with aiohttp.ClientSession() as session:
-            tasks = [_upload_single_file(session, f, token) for f in files]
-            return await asyncio.gather(*tasks)
+            return await asyncio.gather(
+                *[_upload_single_file(session, f) for f in files]
+            )
 
     return asyncio.run(_upload_all())
