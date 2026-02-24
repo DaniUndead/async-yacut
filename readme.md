@@ -52,6 +52,8 @@ flask db upgrade
 
 Bash
 
-flask run 
+flask run
+```
+
 Автор [Данис Хуснутдинов](https://github.com/DaniUndead)
 GitHub: DaniUndead
