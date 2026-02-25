@@ -33,7 +33,7 @@ async def _upload_single_file(session, file_obj):
         headers=YANDEX_HEADERS
     ) as resp:
         resp.raise_for_status()
-        return file_obj.filename, (await resp.json()).get('href')
+        return (await resp.json()).get('href')
 
 
 def upload_files_to_yandex(files):

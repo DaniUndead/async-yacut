@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template
+from flask import flash, redirect, render_template, request
 
 from . import app
 from .constants import REDIRECT_VIEW_NAME
@@ -41,12 +41,14 @@ def redirect_view(short):
 @app.route('/files', methods=['GET', 'POST'])
 def upload_view():
     form = UploadForm()
+
     if not form.validate_on_submit():
         return render_template('upload.html', form=form)
+    uploaded_files = request.files.getlist('files')
 
     try:
-        yandex_urls = upload_files_to_yandex(form.files.data)
-    except Exception as error:
+        yandex_urls = upload_files_to_yandex(uploaded_files)
+    except Exception as error:  
         flash(YANDEX_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
 
@@ -54,14 +56,19 @@ def upload_view():
         saved_links = []
         total_urls = len(yandex_urls)
 
-        for index, url in enumerate(yandex_urls):
+        for index, (file_obj, url) in enumerate(zip(
+            uploaded_files,
+            yandex_urls
+        )):
             is_last_item = (index == total_urls - 1)
 
             short_link_obj = URLMap.create(
                 original=url,
                 commit=is_last_item
             )
-            saved_links.append(short_link_obj.get_short_link())
+            saved_links.append(
+                (file_obj.filename, short_link_obj.get_short_link())
+            )
 
         return render_template(
             'upload.html',
