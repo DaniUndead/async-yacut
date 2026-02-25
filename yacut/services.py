@@ -1,7 +1,7 @@
-import os
 import asyncio
-import aiohttp
+import os
 
+import aiohttp
 
 YANDEX_API_BASE_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
@@ -24,8 +24,7 @@ async def _upload_single_file(session, file_obj):
         resp.raise_for_status()
         upload_url = (await resp.json())['href']
 
-    file_data = file_obj.read()
-    async with session.put(upload_url, data=file_data) as resp:
+    async with session.put(upload_url, data=file_obj.read()) as resp:
         resp.raise_for_status()
 
     async with session.get(

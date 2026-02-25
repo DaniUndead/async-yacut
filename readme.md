@@ -17,26 +17,25 @@
 ```bash
 git clone https://github.com/DaniUndead/async-yacut.git
 cd async-yacut
+```
+
 Создать и активировать виртуальное окружение:
 
 Linux/macOS: ```bash
 python3 -m venv venv
 source venv/bin/activate
-
+```
 
 **Windows:** ```bash
 python -m venv venv 
 source venv/Scripts/activate 
 Установить зависимости:
-
-Bash
+```
 
 python -m pip install --upgrade pip 
 pip install -r requirements.txt 
 Настроить переменные окружения:
 Создайте файл .env в корневой папке и добавьте настройки:
-
-Plaintext
 
 FLASK_APP=yacut 
 FLASK_ENV=development 
@@ -53,7 +52,7 @@ flask db upgrade
 Bash
 
 flask run
-```
+
 
 Автор [Данис Хуснутдинов](https://github.com/DaniUndead)
 GitHub: DaniUndead

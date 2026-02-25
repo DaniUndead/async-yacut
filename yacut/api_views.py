@@ -3,8 +3,8 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from . import app
-from .models import URLMap
 from .error_handlers import InvalidAPIUsage
+from .models import URLMap
 
 ERROR_NOT_FOUND = 'Указанный id не найден'
 ERROR_NO_BODY = 'Отсутствует тело запроса'
@@ -14,12 +14,12 @@ ERROR_NO_URL_FIELD = '"url" является обязательным полем
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def get_url(short):
     """API: Получение оригинальной ссылки по короткому ID"""
-    url_record = URLMap.get(short)
+    record = URLMap.get(short)
 
-    if not url_record:
+    if not record:
         raise InvalidAPIUsage(ERROR_NOT_FOUND, HTTPStatus.NOT_FOUND)
 
-    return jsonify({'url': url_record.original}), HTTPStatus.OK
+    return jsonify({'url': record.original}), HTTPStatus.OK
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -36,7 +36,7 @@ def create_url():
     try:
         return jsonify({
             'url': data['url'],
-            'short_link': URLMap.create_short_link(
+            'short_link': URLMap.create(
                 original=data['url'],
                 short=data.get('custom_id')
             ).get_short_link()

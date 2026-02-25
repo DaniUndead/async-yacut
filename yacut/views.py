@@ -1,12 +1,13 @@
 from flask import flash, redirect, render_template
 
 from . import app
+from .constants import REDIRECT_VIEW_NAME
 from .forms import UploadForm, URLForm
 from .models import URLMap
-from .services import YandexUploadError, upload_files_to_yandex
+from .services import upload_files_to_yandex
 
-REDIRECT_VIEW_NAME = 'redirect_view'
-EXISTING_ID_MSG = 'Предложенный вариант короткой ссылки уже существует.'
+YANDEX_ERROR_MESSAGE = 'Ошибка загрузки на Яндекс.Диск: {error}'
+LINK_ERROR_MESSAGE = 'Ошибка обработки ссылки: {error}'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -20,9 +21,9 @@ def index_view():
         return render_template(
             'index.html',
             form=form,
-            short_url=URLMap.create_short_link(
+            short_url=URLMap.create(
                 original=form.original_link.data,
-                short=form.custom_id.data
+                short=form.custom_id.data,
             ).get_short_link()
         )
     except ValueError as error:
@@ -34,39 +35,39 @@ def index_view():
 @app.route('/<string:short>', endpoint=REDIRECT_VIEW_NAME)
 def redirect_view(short):
     """Редирект: если ссылка начинается на http — переход, иначе — 404."""
-    url_record = URLMap.get_or_404(short)
-    return redirect(url_record.original)
+    return redirect(URLMap.get_or_404(short).original)
 
 
 @app.route('/files', methods=['GET', 'POST'])
 def upload_view():
     form = UploadForm()
-
     if not form.validate_on_submit():
         return render_template('upload.html', form=form)
 
     try:
         yandex_urls = upload_files_to_yandex(form.files.data)
-    except YandexUploadError as error:
-        flash(f'Ошибка загрузки на Яндекс.Диск: {error}', 'error')
+    except Exception as error:
+        flash(YANDEX_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
 
     try:
+        saved_links = []
+        total_urls = len(yandex_urls)
+
+        for index, url in enumerate(yandex_urls):
+            is_last_item = (index == total_urls - 1)
+
+            short_link_obj = URLMap.create(
+                original=url,
+                commit=is_last_item
+            )
+            saved_links.append(short_link_obj.get_short_link())
 
         return render_template(
             'upload.html',
             form=form,
-            saved_links=[
-                (
-                    filename,
-                    URLMap.create_short_link(
-                        original=url,
-                        validate=False
-                    ).get_short_link()
-                )
-                for filename, url in yandex_urls
-            ]
+            saved_links=saved_links
         )
     except ValueError as error:
-        flash(f'Ошибка базы данных: {error}', 'error')
+        flash(LINK_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
