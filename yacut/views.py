@@ -48,7 +48,7 @@ def upload_view():
 
     try:
         yandex_urls = upload_files_to_yandex(uploaded_files)
-    except Exception as error:  
+    except Exception as error:
         flash(YANDEX_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
 
