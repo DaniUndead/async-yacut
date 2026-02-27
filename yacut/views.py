@@ -59,7 +59,6 @@ def upload_view():
                 yandex_urls
             ))
         ]
-
         return render_template(
             'upload.html',
             form=form,

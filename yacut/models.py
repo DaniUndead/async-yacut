@@ -23,6 +23,7 @@ GENERATION_FAILED_MESSAGE = (
     f'за попыток: {MAX_GENERATION_ATTEMPTS}.'
 )
 
+
 class URLMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     original = db.Column(db.String(MAX_URL_LENGTH), nullable=False)
