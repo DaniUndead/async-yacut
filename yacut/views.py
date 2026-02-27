@@ -24,6 +24,7 @@ def index_view():
             short_url=URLMap.create(
                 original=form.original_link.data,
                 short=form.custom_id.data,
+                validate=False
             ).get_short_link()
         )
     except ValueError as error:
@@ -41,39 +42,24 @@ def redirect_view(short):
 @app.route('/files', methods=['GET', 'POST'])
 def upload_view():
     form = UploadForm()
-
     if not form.validate_on_submit():
         return render_template('upload.html', form=form)
-    uploaded_files = request.files.getlist('files')
-
+    uploaded_files = form.files.data
     try:
         yandex_urls = upload_files_to_yandex(uploaded_files)
     except Exception as error:
         flash(YANDEX_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
-
     try:
-        saved_links = []
-        total_urls = len(yandex_urls)
-
-        for index, (file_obj, url) in enumerate(zip(
-            uploaded_files,
-            yandex_urls
-        )):
-            is_last_item = (index == total_urls - 1)
-
-            short_link_obj = URLMap.create(
-                original=url,
-                commit=is_last_item
-            )
-            saved_links.append(
-                (file_obj.filename, short_link_obj.get_short_link())
-            )
-
         return render_template(
             'upload.html',
             form=form,
-            saved_links=saved_links
+            saved_links=[
+                (file_obj.filename, URLMap.create(
+                    original=url
+                ).get_short_link())
+                for file_obj, url in zip(uploaded_files, yandex_urls)
+            ]
         )
     except ValueError as error:
         flash(LINK_ERROR_MESSAGE.format(error=error), 'error')

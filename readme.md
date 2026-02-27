@@ -15,7 +15,7 @@
 Клонировать репозиторий и перейти в него:  
 
 ```bash
-git clone [https://github.com/DaniUndead/async-yacut.git](https://github.com/DaniUndead/async-yacut.git)
+git clone https://github.com/DaniUndead/async-yacut.git
 cd async-yacut
 ```
 Создать и активировать виртуальное окружение:

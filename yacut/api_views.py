@@ -15,7 +15,6 @@ ERROR_NO_URL_FIELD = '"url" является обязательным полем
 def get_url(short):
     """API: Получение оригинальной ссылки по короткому ID"""
     record = URLMap.get(short)
-
     if not record:
         raise InvalidAPIUsage(ERROR_NOT_FOUND, HTTPStatus.NOT_FOUND)
 
@@ -26,13 +25,10 @@ def get_url(short):
 def create_url():
     """API: Создание новой короткой ссылки"""
     data = request.get_json(silent=True)
-
     if data is None:
         raise InvalidAPIUsage(ERROR_NO_BODY)
-
     if 'url' not in data:
         raise InvalidAPIUsage(ERROR_NO_URL_FIELD)
-
     try:
         return jsonify({
             'url': data['url'],

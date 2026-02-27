@@ -7,4 +7,4 @@ ALLOWED_CHARS = string.ascii_letters + string.digits
 SHORT_PATTERN = rf'^[{ALLOWED_CHARS}]+$'
 REDIRECT_VIEW_NAME = 'redirect_view'
 MAX_GENERATION_ATTEMPTS = 10
-RESERVED_SHORT_NAMES = ('api', 'files')
+RESERVED_SHORT_NAMES = ('files')

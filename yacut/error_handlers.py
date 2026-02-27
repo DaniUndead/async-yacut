@@ -30,7 +30,6 @@ def page_not_found(error):
 @app.errorhandler(HTTPStatus.INTERNAL_SERVER_ERROR)
 def internal_error(error):
     db.session.rollback()
-
     if request.path.startswith('/api/'):
         return jsonify(
             ({'message': 'Внутренняя ошибка сервера'}),

@@ -18,6 +18,7 @@ URL_TOO_LONG_MESSAGE = (
     'Указанная ссылка превышает допустимый '
     f'размер в {MAX_URL_LENGTH} символов.'
 )
+GENERATION_FAILED_MESSAGE = 'Не удалось сгенерировать уникальную короткую ссылку'
 
 
 class URLMap(db.Model):
@@ -49,28 +50,25 @@ class URLMap(db.Model):
             ))
             if short not in RESERVED_SHORT_NAMES and not URLMap.get(short):
                 return short
+        raise RuntimeError(GENERATION_FAILED_MESSAGE)
 
     @staticmethod
     def create(original, short=None, validate=True, commit=True):
         if not short:
             short = URLMap.get_unique_short()
-        elif validate:
-            if len(short) > SHORT_MAX_LEN or not re.match(
-                SHORT_PATTERN,
-                short
-            ):
-                raise ValueError(INVALID_SHORT_NAME_MESSAGE)
-
+        else:
+            if validate:
+                if len(short) > SHORT_MAX_LEN or not re.match(
+                    SHORT_PATTERN,
+                    short
+                ):
+                    raise ValueError(INVALID_SHORT_NAME_MESSAGE)
             if URLMap.get(short) or short in RESERVED_SHORT_NAMES:
                 raise ValueError(SHORT_NAME_TAKEN_MESSAGE)
-
         if validate and len(original) > MAX_URL_LENGTH:
             raise ValueError(URL_TOO_LONG_MESSAGE)
-
         url_record = URLMap(original=original, short=short)
         db.session.add(url_record)
-
         if commit:
             db.session.commit()
-
         return url_record

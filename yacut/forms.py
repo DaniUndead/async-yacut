@@ -8,7 +8,10 @@ ORIGINAL_LINK_LABEL = 'Оригинальная ссылка'
 REQUIRED_MESSAGE = 'Это поле обязательно'
 INVALID_URL_MESSAGE = 'Неверный формат ссылки'
 SHORT = 'Твой вариант короткой ссылки'
-TOO_LONG_MESSAGE = 'Слишком длинное имя'
+TOO_LONG_MESSAGE = (
+    'Указанная ссылка превышает допустимый '
+    f'размер в {MAX_URL_LENGTH} символов.'
+)
 INVALID_CHARS_MESSAGE = 'Допустимы только латинские буквы и цифры'
 SUBMIT_LABEL = 'Создать'
 FILES_LABEL = 'Выберите файлы'

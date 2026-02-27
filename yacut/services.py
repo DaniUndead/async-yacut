@@ -42,5 +42,4 @@ def upload_files_to_yandex(files):
             return await asyncio.gather(
                 *[_upload_single_file(session, f) for f in files]
             )
-
     return asyncio.run(_upload_all())
