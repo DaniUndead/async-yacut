@@ -18,7 +18,9 @@ URL_TOO_LONG_MESSAGE = (
     'Указанная ссылка превышает допустимый '
     f'размер в {MAX_URL_LENGTH} символов.'
 )
-GENERATION_FAILED_MESSAGE = 'Не удалось сгенерировать уникальную короткую ссылку'
+GENERATION_FAILED_MESSAGE = (
+    'Не удалось сгенерировать уникальную короткую ссылку'
+)
 
 
 class URLMap(db.Model):
