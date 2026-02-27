@@ -13,10 +13,8 @@ LINK_ERROR_MESSAGE = 'Ошибка обработки ссылки: {error}'
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     form = URLForm()
-
     if not form.validate_on_submit():
         return render_template('index.html', form=form)
-
     try:
         return render_template(
             'index.html',
@@ -27,8 +25,7 @@ def index_view():
                 validate=False
             ).get_short_link()
         )
-    except ValueError as error:
-
+    except Exception as error:
         flash(str(error), 'error')
         return render_template('index.html', form=form)
 
@@ -51,16 +48,23 @@ def upload_view():
         flash(YANDEX_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)
     try:
+        total_files = len(uploaded_files)
+        saved_links = [
+            (file.filename, URLMap.create(
+                original=url,
+                commit=(index == total_files - 1)
+            ).get_short_link())
+            for index, (file, url) in enumerate(zip(
+                uploaded_files,
+                yandex_urls
+            ))
+        ]
+
         return render_template(
             'upload.html',
             form=form,
-            saved_links=[
-                (file_obj.filename, URLMap.create(
-                    original=url
-                ).get_short_link())
-                for file_obj, url in zip(uploaded_files, yandex_urls)
-            ]
+            saved_links=saved_links
         )
-    except ValueError as error:
+    except Exception as error:
         flash(LINK_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)

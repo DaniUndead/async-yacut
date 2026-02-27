@@ -1,10 +1,10 @@
 import string
 
 MAX_URL_LENGTH = 2048
-SHORT_MAX_LEN = 16
+SHORT_MAX_LENGTH = 16
 SHORT_LENGTH = 6
 ALLOWED_CHARS = string.ascii_letters + string.digits
 SHORT_PATTERN = rf'^[{ALLOWED_CHARS}]+$'
 REDIRECT_VIEW_NAME = 'redirect_view'
 MAX_GENERATION_ATTEMPTS = 10
-RESERVED_SHORT_NAMES = ('files')
+RESERVED_SHORT = ('files')

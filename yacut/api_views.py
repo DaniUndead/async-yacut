@@ -27,7 +27,7 @@ def create_url():
     data = request.get_json(silent=True)
     if data is None:
         raise InvalidAPIUsage(ERROR_NO_BODY)
-    if 'url' not in data:
+    if 'url' not in data or not data['url']:
         raise InvalidAPIUsage(ERROR_NO_URL_FIELD)
     try:
         return jsonify({
@@ -37,5 +37,5 @@ def create_url():
                 short=data.get('custom_id')
             ).get_short_link()
         }), HTTPStatus.CREATED
-    except ValueError as error:
+    except Exception as error:
         raise InvalidAPIUsage(str(error))

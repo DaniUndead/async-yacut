@@ -7,8 +7,8 @@ from flask import url_for
 from yacut import db
 
 from .constants import (ALLOWED_CHARS, MAX_GENERATION_ATTEMPTS, MAX_URL_LENGTH,
-                        REDIRECT_VIEW_NAME, RESERVED_SHORT_NAMES, SHORT_LENGTH,
-                        SHORT_MAX_LEN, SHORT_PATTERN)
+                        REDIRECT_VIEW_NAME, RESERVED_SHORT, SHORT_LENGTH,
+                        SHORT_MAX_LENGTH, SHORT_PATTERN)
 
 INVALID_SHORT_NAME_MESSAGE = 'Указано недопустимое имя для короткой ссылки'
 SHORT_NAME_TAKEN_MESSAGE = (
@@ -16,18 +16,18 @@ SHORT_NAME_TAKEN_MESSAGE = (
 )
 URL_TOO_LONG_MESSAGE = (
     'Указанная ссылка превышает допустимый '
-    f'размер в {MAX_URL_LENGTH} символов.'
+    f'размер символов : {MAX_URL_LENGTH}.'
 )
 GENERATION_FAILED_MESSAGE = (
-    'Не удалось сгенерировать уникальную короткую ссылку'
+    'Не удалось сгенерировать уникальную короткую ссылку '
+    f'за попыток: {MAX_GENERATION_ATTEMPTS}.'
 )
-
 
 class URLMap(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     original = db.Column(db.String(MAX_URL_LENGTH), nullable=False)
     short = db.Column(
-        db.String(SHORT_MAX_LEN),
+        db.String(SHORT_MAX_LENGTH),
         unique=True, nullable=False
     )
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -50,7 +50,7 @@ class URLMap(db.Model):
                 ALLOWED_CHARS,
                 k=SHORT_LENGTH
             ))
-            if short not in RESERVED_SHORT_NAMES and not URLMap.get(short):
+            if short not in RESERVED_SHORT and not URLMap.get(short):
                 return short
         raise RuntimeError(GENERATION_FAILED_MESSAGE)
 
@@ -60,12 +60,12 @@ class URLMap(db.Model):
             short = URLMap.get_unique_short()
         else:
             if validate:
-                if len(short) > SHORT_MAX_LEN or not re.match(
+                if len(short) > SHORT_MAX_LENGTH or not re.match(
                     SHORT_PATTERN,
                     short
                 ):
                     raise ValueError(INVALID_SHORT_NAME_MESSAGE)
-            if URLMap.get(short) or short in RESERVED_SHORT_NAMES:
+            if URLMap.get(short) or short in RESERVED_SHORT:
                 raise ValueError(SHORT_NAME_TAKEN_MESSAGE)
         if validate and len(original) > MAX_URL_LENGTH:
             raise ValueError(URL_TOO_LONG_MESSAGE)

@@ -2,15 +2,15 @@ from flask_wtf import FlaskForm
 from wtforms import MultipleFileField, StringField, SubmitField, URLField
 from wtforms.validators import URL, DataRequired, Length, Optional, Regexp
 
-from .constants import MAX_URL_LENGTH, SHORT_MAX_LEN, SHORT_PATTERN
+from .constants import MAX_URL_LENGTH, SHORT_MAX_LENGTH, SHORT_PATTERN
 
 ORIGINAL_LINK_LABEL = 'Оригинальная ссылка'
 REQUIRED_MESSAGE = 'Это поле обязательно'
 INVALID_URL_MESSAGE = 'Неверный формат ссылки'
-SHORT = 'Твой вариант короткой ссылки'
+SHORT = 'Вариант короткой ссылки'
 TOO_LONG_MESSAGE = (
     'Указанная ссылка превышает допустимый '
-    f'размер в {MAX_URL_LENGTH} символов.'
+    f'размер символов : {MAX_URL_LENGTH}.'
 )
 INVALID_CHARS_MESSAGE = 'Допустимы только латинские буквы и цифры'
 SUBMIT_LABEL = 'Создать'
@@ -31,7 +31,7 @@ class URLForm(FlaskForm):
     custom_id = StringField(
         SHORT,
         validators=[
-            Length(max=SHORT_MAX_LEN, message=TOO_LONG_MESSAGE),
+            Length(max=SHORT_MAX_LENGTH, message=TOO_LONG_MESSAGE),
             Regexp(SHORT_PATTERN, message=INVALID_CHARS_MESSAGE),
             Optional()
         ]
