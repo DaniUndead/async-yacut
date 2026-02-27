@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request
+from flask import flash, redirect, render_template
 
 from . import app
 from .constants import REDIRECT_VIEW_NAME
