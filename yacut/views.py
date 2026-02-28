@@ -1,4 +1,5 @@
 from flask import flash, redirect, render_template
+from sqlalchemy.exc import IntegrityError
 
 from . import app
 from .constants import REDIRECT_VIEW_NAME
@@ -25,7 +26,7 @@ def index_view():
                 validate=False
             ).get_short_link()
         )
-    except Exception as error:
+    except (ValueError, IntegrityError) as error:
         flash(str(error), 'error')
         return render_template('index.html', form=form)
 
@@ -49,21 +50,20 @@ def upload_view():
         return render_template('upload.html', form=form)
     try:
         total_files = len(uploaded_files)
-        saved_links = [
-            (file.filename, URLMap.create(
-                original=url,
-                commit=(index == total_files - 1)
-            ).get_short_link())
-            for index, (file, url) in enumerate(zip(
-                uploaded_files,
-                yandex_urls
-            ))
-        ]
         return render_template(
             'upload.html',
             form=form,
-            saved_links=saved_links
+            saved_links=[
+                (file.filename, URLMap.create(
+                    original=url,
+                    commit=(index == total_files - 1)
+                ).get_short_link())
+                for index, (file, url) in enumerate(zip(
+                    uploaded_files,
+                    yandex_urls
+                ))
+            ]
         )
-    except Exception as error:
+    except (ValueError, RuntimeError) as error:
         flash(LINK_ERROR_MESSAGE.format(error=error), 'error')
         return render_template('upload.html', form=form)

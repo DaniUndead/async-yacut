@@ -66,7 +66,7 @@ class URLMap(db.Model):
                     short
                 ):
                     raise ValueError(INVALID_SHORT_NAME_MESSAGE)
-            if URLMap.get(short) or short in RESERVED_SHORT:
+            if short in RESERVED_SHORT or URLMap.get(short):
                 raise ValueError(SHORT_NAME_TAKEN_MESSAGE)
         if validate and len(original) > MAX_URL_LENGTH:
             raise ValueError(URL_TOO_LONG_MESSAGE)
