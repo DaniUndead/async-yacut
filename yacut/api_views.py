@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from flask import jsonify, request
-from sqlalchemy.exc import IntegrityError
 
 from . import app
 from .error_handlers import InvalidAPIUsage
@@ -38,5 +37,5 @@ def create_url():
                 short=data.get('custom_id')
             ).get_short_link()
         }), HTTPStatus.CREATED
-    except (ValueError, IntegrityError) as error:
+    except (ValueError, RuntimeError) as error:
         raise InvalidAPIUsage(str(error))

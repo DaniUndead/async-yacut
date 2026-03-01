@@ -1,5 +1,4 @@
 from flask import flash, redirect, render_template
-from sqlalchemy.exc import IntegrityError
 
 from . import app
 from .constants import REDIRECT_VIEW_NAME
@@ -26,7 +25,7 @@ def index_view():
                 validate=False
             ).get_short_link()
         )
-    except (ValueError, IntegrityError) as error:
+    except (ValueError, RuntimeError) as error:
         flash(str(error), 'error')
         return render_template('index.html', form=form)
 
